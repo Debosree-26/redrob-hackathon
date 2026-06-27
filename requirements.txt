@@ -1,0 +1,17 @@
+# Redrob Candidate Ranking System
+# Team Shankaracharya
+
+# Core
+numpy>=1.24,<2.0
+pandas>=2.0
+
+# Embedding model (precompute.py only — not needed during ranking)
+FlagEmbedding>=1.2
+torch>=2.0
+transformers>=4.36
+
+# Vector similarity (optional — numpy fallback gives identical results)
+faiss-cpu>=1.7
+
+# Utilities
+tqdm>=4.65

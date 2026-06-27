@@ -1,0 +1,92 @@
+# Redrob Hackathon — Submission Metadata
+# Team Shankaracharya
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "Shankaracharya"
+
+primary_contact:
+  name: "Sana Venkata Brahmaiah"
+  email: "brammaayyadsai@gmail.com"
+  phone: "+91-9972033600"
+
+team_members:
+  - name: "Sana Venkata Brahmaiah"
+    email: "brammaayyadsai@gmail.com"
+    role: "POC"
+  - name: "Debosree Chatterjee"
+    email: "debosree.chatterjee123@gmail.com"
+    phone: "+91-9845130291"
+    role: "Member"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/Debosree-26/redrob-hackathon"
+
+sandbox_link: "https://colab.research.google.com/drive/1Gix0gcNuQvHcLFppjDX0-4OrKzC8v54q"
+# sandbox_demo.ipynb — end-to-end pipeline on 50 embedded sample candidates.
+# No setup needed — click Runtime -> Run all. Produces ranked CSV in ~4 min on CPU.
+# Hard filters bypassed for demo (sample is random 50, not pre-filtered pool).
+# In the full 100K run: precompute_v2.py (GPU, ~21 min) + rank_v2_latest.py (CPU, <1 min).
+
+reproduce_command: "python rank_v2_latest.py --artifacts ./artifacts_v2 --out ./submission_v2.csv --top_n 100"
+# Ranking step only — runs in <5 min on CPU using precomputed artifacts.
+# Precompute step (run once, GPU recommended):
+#   python precompute_v2.py --input candidates.jsonl --out_dir ./artifacts_v2 --batch_size 256
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "ASUS ROG Flow X13 (GV301RC) — AMD Ryzen 9 6900HS 3.30GHz, Windows 11"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.11"
+  os: "Windows 11 (64-bit)"
+  uses_gpu_for_inference: false        # ranking step is CPU only
+  has_network_during_ranking: false    # no API calls during ranking
+  pre_computation_required: true       # BGE-M3 embeddings generated offline
+  pre_computation_time_minutes: 21     # ~21 min on A100 (batch_size=512); ~150 min on T4
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+ai_tools_used:
+  - "Claude"
+
+ai_usage_summary: |
+  Used Claude for architectural discussion, code review, and presentation
+  preparation. All candidate ranking logic, scoring formula design, threshold
+  decisions, and engineering iteration were done by the team. No candidate
+  data was fed to any LLM during the ranking step. The ranking code runs
+  fully offline on precomputed artifacts with no API calls.
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  Two-stage pipeline built around the JD principle: "10 great matches > 1000
+  maybes." Stage 1 applies rule-based hard filters (verification, notice
+  period, location, career integrity, honeypot detection) reducing 100K to
+  ~1,052 survivors. Stage 2 scores survivors on Feature (40%), Semantic (35%),
+  and Behavioral (25%) signals multiplied by stacked penalty factors.
+
+  Semantic scoring uses BAAI/BGE-M3 hybrid dense+sparse embeddings against the
+  real JD embedding (not a centroid proxy), combined with keyword matching for
+  must-haves and nice-to-haves. Two custom multipliers reward candidates who
+  combine ML depth with shipping culture (shipper multiplier x1.15) and apply
+  no penalty to LangChain users with classical IR roots (pre-LLM multiplier).
+  Behavioral scoring weights recruiter response rate (35%) heavily as the
+  primary reachability signal. Runtime: ranking step <1 min on CPU.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true       # caught naturally via exp mismatch + zero skill duration checks
+  reproduction_tested: true
